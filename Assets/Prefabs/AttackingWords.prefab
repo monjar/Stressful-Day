@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68e778f1919c41729095c2ac3a44ebb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stressAmount: 10
   spacing: 0.02
   wordPrefab: {fileID: 678423367161005431, guid: e76aaa5d77e3e414c9550315febc9afe, type: 3}
   text: 
@@ -266,7 +267,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &3060010255028374411
 MonoBehaviour:
   m_ObjectHideFlags: 0

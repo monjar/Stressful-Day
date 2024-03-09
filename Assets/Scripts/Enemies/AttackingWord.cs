@@ -30,6 +30,7 @@ namespace Enemies
         public float speedMag = 5f;
         private Vector2 currentSpeed;
 
+        public float inertiaTimeExtend = 1.5f;
 
         public float inertiaTime = 1;
 
@@ -51,12 +52,15 @@ namespace Enemies
 
             if (inertiaTime <= 0f)
             {
-                currentSpeed = Vector3.Lerp(currentSpeed, targetSpeed, Time.deltaTime * smoothTime).normalized *
-                               speedMag;
+                if (inertiaTimeExtend <= 0f)
+                    currentSpeed = targetSpeed;
+                else
+                    currentSpeed = Vector3.Lerp(currentSpeed, targetSpeed, Time.deltaTime * smoothTime).normalized *
+                                   speedMag;
             }
 
             inertiaTime -= Time.deltaTime;
-
+            inertiaTimeExtend -= Time.deltaTime;
             var movementDelta = currentSpeed * Time.deltaTime;
             transform.position += new Vector3(movementDelta.x, movementDelta.y, 0);
         }

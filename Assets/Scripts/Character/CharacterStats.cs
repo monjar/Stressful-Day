@@ -9,6 +9,8 @@ namespace Character
         public float maxStress;
         [SerializeField] private float _stressMeter;
 
+
+        public float CurrentStress => _stressMeter;
         private void Start()
         {
             _stressMeter = 0;
@@ -21,6 +23,7 @@ namespace Character
             {
                 Debug.Log("STRESSING!!");
             }
+
         }
     }
 }

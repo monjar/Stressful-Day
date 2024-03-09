@@ -17,6 +17,7 @@ namespace Enemies
         public List<AttackingWord> attackingWords = new List<AttackingWord>();
         public bool shouldUpdateWords = false;
 
+        private bool _isCheckingForHit = true;
         public bool isDodgeable;
         private Transform _characterTransform;
 
@@ -29,6 +30,9 @@ namespace Enemies
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            if(!_isCheckingForHit)
+                return;
+            _isCheckingForHit = false;
             GetComponent<ContentSizeFitter>().enabled = false;
             GetComponent<HorizontalLayoutGroup>().enabled = false;
             for (int i = 0; i < transform.childCount; i++)
