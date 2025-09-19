@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Character;
 using UnityEngine;
 
 public class CharacterController : MonoBehaviour
@@ -14,11 +15,55 @@ public class CharacterController : MonoBehaviour
     private Vector2 _currentMovement;
 
 
+    private CharacterMovementState _movementState;
+
     private void Update()
     {
         _currentMovement.x = Input.GetAxisRaw("Horizontal");
         _currentMovement.y = Input.GetAxisRaw("Vertical");
         _currentMovement.Normalize();
+        if (_currentMovement.x < -0.01f )
+        {
+            _movementState = CharacterMovementState.LEFT;
+            animator.SetBool("IsWalkingUp", false);
+            animator.SetBool("IsWalkingDown", false);
+            animator.SetBool("IsWalkingLeft", true);
+            animator.SetBool("IsWalkingRight", false);
+        }
+        else if (_currentMovement.x > 0.01f  )
+        {
+            _movementState = CharacterMovementState.RIGHT;
+            animator.SetBool("IsWalkingUp", false);
+            animator.SetBool("IsWalkingDown", false);
+            animator.SetBool("IsWalkingLeft", false);
+            animator.SetBool("IsWalkingRight", true);
+        }
+
+        else if (_currentMovement.y > 0.01f )
+        {
+            _movementState = CharacterMovementState.UP;
+            animator.SetBool("IsWalkingUp", true);
+            animator.SetBool("IsWalkingDown", false);
+            animator.SetBool("IsWalkingLeft", false);
+            animator.SetBool("IsWalkingRight", false);
+        }
+        else if (_currentMovement.y < -0.01f)
+        {
+            _movementState = CharacterMovementState.DOWN;
+            animator.SetBool("IsWalkingUp", false);
+            animator.SetBool("IsWalkingDown", true);
+            animator.SetBool("IsWalkingLeft", false);
+            animator.SetBool("IsWalkingRight", false);
+        }
+        else if (Mathf.Abs(_currentMovement.y) < 0.01f  && Mathf.Abs(_currentMovement.x) < 0.01f)
+        {
+            _movementState = CharacterMovementState.IDLE;
+            animator.SetBool("IsWalkingUp", false);
+            animator.SetBool("IsWalkingDown", false);
+            animator.SetBool("IsWalkingLeft", false);
+            animator.SetBool("IsWalkingRight", false);
+        }
+        
     }
 
 
@@ -29,11 +74,13 @@ public class CharacterController : MonoBehaviour
             ? acceleratedSpeed.normalized * topSpeed
             : acceleratedSpeed;
     }
+
     public void StopInY()
     {
         var acc = (-rBody.velocity.y) * (Time.fixedDeltaTime * stopAccelerationMag);
         ApplyAcceleration(new Vector2(0, acc));
     }
+
     public void StopInX()
     {
         var acc = (-rBody.velocity.x) * (Time.fixedDeltaTime * stopAccelerationMag);
@@ -51,6 +98,13 @@ public class CharacterController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!CharacterManager.Instance.IsGameGoing)
+        {
+            StopInX();
+            StopInY();
+            return;
+        }
+
         var isStoppingInX = (Mathf.Abs(_currentMovement.x) < 0.01f);
         var isStoppingInY = (Mathf.Abs(_currentMovement.y) < 0.01f);
 
@@ -58,13 +112,24 @@ public class CharacterController : MonoBehaviour
         {
             StopInX();
         }
+
         if (isStoppingInY)
         {
             StopInY();
         }
-        if(!isStoppingInY || !isStoppingInX)
+
+        if (!isStoppingInY || !isStoppingInX)
         {
             Move();
         }
+    }
+
+    protected enum CharacterMovementState
+    {
+        UP,
+        IDLE,
+        DOWN,
+        LEFT,
+        RIGHT
     }
 }

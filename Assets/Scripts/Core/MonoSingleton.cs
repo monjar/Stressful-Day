@@ -20,4 +20,13 @@ namespace Core
             }
         }
     }
+    
+    public class MonoImmortal<T> : MonoSingleton<T> where T : MonoBehaviour
+    {
+        public override void Awake()
+        {
+            base.Awake();
+            DontDestroyOnLoad(gameObject);
+        }
+    }
 }

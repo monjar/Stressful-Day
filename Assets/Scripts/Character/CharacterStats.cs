@@ -24,6 +24,8 @@ namespace Character
                 Debug.Log("STRESSING!!");
             }
 
+            _stressMeter = Mathf.Max(0, _stressMeter);
+
         }
     }
 }

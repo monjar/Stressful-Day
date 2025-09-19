@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Audio;
 using Character;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -11,8 +14,8 @@ namespace Enemies
         private Transform _target;
         private Vector3 _targetInitPos;
         private bool _isDodgeable;
-        public float unDodgeableBreakDistance = 1;
-
+        private float unDodgeableBreakDistance = 1.05f;
+        private float unDodgeableTime = 4;
         private float _stressPower;
 
         public void ShootTo(Transform target, bool isDodgeable, float stressPower)
@@ -24,6 +27,8 @@ namespace Enemies
             currentSpeed = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             currentSpeed = currentSpeed.normalized * speedMag;
             _targetInitPos = target.position;
+            if (_isDodgeable)
+                StartCoroutine(DestroyAfterTime());
         }
 
         public float smoothTime = 10;
@@ -58,6 +63,10 @@ namespace Enemies
                     currentSpeed = Vector3.Lerp(currentSpeed, targetSpeed, Time.deltaTime * smoothTime).normalized *
                                    speedMag;
             }
+            else
+            {
+                _targetInitPos = _target.position;
+            }
 
             inertiaTime -= Time.deltaTime;
             inertiaTimeExtend -= Time.deltaTime;
@@ -65,10 +74,19 @@ namespace Enemies
             transform.position += new Vector3(movementDelta.x, movementDelta.y, 0);
         }
 
+        private IEnumerator DestroyAfterTime()
+        {
+            yield return new WaitForSeconds(unDodgeableTime);
+            _isShooting = false;
+            Destroy(gameObject);
+        }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            if(!_isShooting)
+                return;
             _isShooting = false;
+            AudioManager.Instance.PlayOneShot(AudioName.HIT);
             other.GetComponent<CharacterManager>().GetHitWithItem(_stressPower);
             Destroy(gameObject);
         }
